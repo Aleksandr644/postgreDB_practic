@@ -18,7 +18,7 @@ class PGDB:
             PGDB.conn.close()
             PGDB.conn = None
     def request(self, execut:str = "SELECT version()"):
-        PGDB.cursor.execut(execut)
+        PGDB.cursor.execute(execut)
         return PGDB.cursor.fetchall()
     
     @staticmethod
