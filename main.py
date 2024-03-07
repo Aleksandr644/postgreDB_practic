@@ -19,7 +19,7 @@ class PGDB:
         if PGDB.conn:
             PGDB.conn.close()
             PGDB.conn = None
-    def request(execut:str = None):
+    def request(execut:str = ""):
         if execut:
             PGDB.cursor.execute(execut)
         else:
