@@ -1,8 +1,6 @@
 import psycopg2
 from configparser import ConfigParser
 
-
-
 class PGDB:
     conn = None
     cursor = None
@@ -19,15 +17,22 @@ class PGDB:
         if PGDB.conn:
             PGDB.conn.close()
             PGDB.conn = None
-    def request(execut:str):
+    def request(self, execut:str = "SELECT version()"):
         PGDB.cursor.execut(execut)
         return PGDB.cursor.fetchall()
+    
     @staticmethod
     def config(filename:str ,section:str) -> dict:
         cfg = ConfigParser()
         cfg.read(filename)
         return dict(cfg.items(section))
+    
 if __name__ == "__main__":
     db = PGDB()
-    print(str(db.request("SELECT version()")))
+    inputText = ""
+    while True:
+        if "exit" == inputText:
+            break
+        else:
+            print(db.request(inputText))
     del db
