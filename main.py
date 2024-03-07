@@ -1,13 +1,13 @@
 import psycopg2
 from configparser import ConfigParser
 
-config = ConfigParser()
-section = "postgresql"
-config.read("db.ini")
-params = dict(config.items(section))
+def config(filename:str = "db.ini", section:str = "postgresql") -> dict:
+    cfg = ConfigParser()
+    cfg.read(filename)
+    return dict(cfg.items(section))
 
 print("Connection")
-connection = psycopg2.connect(**params)
+connection = psycopg2.connect(**config())
 
 var_cur = connection.cursor()
 
