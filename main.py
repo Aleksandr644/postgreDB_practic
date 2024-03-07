@@ -5,9 +5,20 @@ class PGDB:
     conn = None
     cursor = None
     def __init__(self, *, filename:str = "db.ini", section:str = "postgresql"):
-        PGDB.conn = psycopg2.connect(**PGDB.config(filename, section))
-        print("connection")
-        PGDB.cursor = PGDB.conn.cursor()
+        try:
+            PGDB.conn = psycopg2.connect(**PGDB.config(filename, section))
+            print("Connection")
+            PGDB.cursor = PGDB.conn.cursor()
+            params = PGDB.conn.get_dsn_parameters()
+            stat = PGDB.conn.get_parameter_status()
+            print("information:")
+            print(params)
+            print(stat)
+        except(Exception, psycopg2.Error) as error:
+            print("Ошибка подключения к базе данных")
+            exit(1)
+        finally:
+            PGDB.__del__()
         
     def __del__(self):
         print("Closing to connect")
@@ -17,6 +28,7 @@ class PGDB:
         if PGDB.conn:
             PGDB.conn.close()
             PGDB.conn = None
+
     def request(self, execut:str = "SELECT version()"):
         PGDB.cursor.execute(execut)
         return PGDB.cursor.fetchall()
