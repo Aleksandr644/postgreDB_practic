@@ -31,6 +31,7 @@ if __name__ == "__main__":
     db = PGDB()
     inputText = ""
     while True:
+        inputText = input("Пожалуйста введите запрос:\n")
         if "exit" == inputText:
             break
         else:
