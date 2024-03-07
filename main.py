@@ -32,5 +32,5 @@ class PGDB:
         return dict(cfg.items(section))
 if __name__ == "__main__":
     db = PGDB()
-    print(db.request())
+    print(str(db.request()))
     del db
