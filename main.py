@@ -19,11 +19,8 @@ class PGDB:
         if PGDB.conn:
             PGDB.conn.close()
             PGDB.conn = None
-    def request(execut:str = ""):
-        if execut:
-            PGDB.cursor.execute(execut)
-        else:
-            PGDB.cursor.execut("SELECT version()")
+    def request(execut:str):
+        PGDB.cursor.execut(execut)
         return PGDB.cursor.fetchall()
     @staticmethod
     def config(filename:str ,section:str) -> dict:
@@ -32,5 +29,5 @@ class PGDB:
         return dict(cfg.items(section))
 if __name__ == "__main__":
     db = PGDB()
-    print(str(db.request()))
+    print(str(db.request("SELECT version()")))
     del db
