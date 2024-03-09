@@ -40,7 +40,7 @@ if __name__ == "__main__":
     db = PGDB()
     inputText = ""
     while True:
-        inputText = input("Пожалуйста введите запрос:\nДля выхода введите exit")
+        inputText = input("Пожалуйста введите запрос:\nДля выхода введите exit\n")
         if "exit" == inputText:
             break
         else:
