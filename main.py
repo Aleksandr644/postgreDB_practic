@@ -10,15 +10,12 @@ class PGDB:
             print("Connection")
             PGDB.cursor = PGDB.conn.cursor()
             params = PGDB.conn.get_dsn_parameters()
-            stat = PGDB.conn.get_parameter_status()
             print("information:")
             print(params)
-            print(stat)
         except(Exception, psycopg2.Error) as error:
-            print("Ошибка подключения к базе данных")
-            exit(1)
-        finally:
+            print("Ошибка подключения к базе данных", error)
             PGDB.__del__()
+            exit(1)            
         
     def __del__(self):
         print("Closing to connect")
@@ -43,7 +40,7 @@ if __name__ == "__main__":
     db = PGDB()
     inputText = ""
     while True:
-        inputText = input("Пожалуйста введите запрос:\n")
+        inputText = input("Пожалуйста введите запрос:\nДля выхода введите exit")
         if "exit" == inputText:
             break
         else:
