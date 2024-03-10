@@ -24,7 +24,7 @@ class PGDB:
             print("information:")
             print(params)
         except(Exception, psycopg2.Error) as error:
-            print("Ошибка подключения к базе данных", error)
+            print("Ошибка подключения к базе данных\n", error)
             exit()            
         
     def __del__(self):
@@ -37,9 +37,12 @@ class PGDB:
         print("Closing to connect")
 
     def request(self, order:str) -> str:
-        if not order : order = "SELECT version()"
-        self.cursor.execute(order)
-        return self.cursor.fetchall()
+        try:
+            if not order : order = "SELECT version()"
+            self.cursor.execute(order)
+            return self.cursor.fetchall()
+        except psycopg2.Error as error:
+            print("Что то пошло не так...\n", error)
     
     @staticmethod
     def config(filename:str ,section:str) -> dict:
