@@ -1,34 +1,49 @@
 import psycopg2
 from configparser import ConfigParser
 
+def singleton(cls, *args, **kwargs):
+    instances = {}
+    def _singleton(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return _singleton
+
+@singleton
 class PGDB:
-    conn = None
-    cursor = None
+    #conn = None
+    #cursor = None
     def __init__(self, *, filename:str = "db.ini", section:str = "postgresql"):
         try:
-            PGDB.conn = psycopg2.connect(**PGDB.config(filename, section))
+            self.conn = psycopg2.connect(**PGDB.config(filename, section))
             print("Connection")
-            PGDB.cursor = PGDB.conn.cursor()
-            params = PGDB.conn.get_dsn_parameters()
+            self.cursor = self.conn.cursor()
+            params = self.conn.get_dsn_parameters()
             print("information:")
             print(params)
         except(Exception, psycopg2.Error) as error:
             print("Ошибка подключения к базе данных", error)
-            PGDB.__del__()
+            self.__del__()
             exit(1)            
         
     def __del__(self):
+        if self.cursor:
+            self.cursor.close()
+            self.cursor = None
+        if self.conn:
+            self.conn.close()
+            self.conn = None
         print("Closing to connect")
-        if PGDB.cursor:
-            PGDB.cursor.close()
-            PGDB.cursor = None
-        if PGDB.conn:
-            PGDB.conn.close()
-            PGDB.conn = None
 
-    def request(self, execut:str = "SELECT version()"):
-        PGDB.cursor.execute(execut)
-        return PGDB.cursor.fetchall()
+    def request(self, order:str):
+        if not order : order = "SELECT version()"
+        self.cursor.execute(order)
+        return self.cursor.fetchall()
+    
+    def request_add_product(self, article:str, name:str, description:str, volume:float, unit:str):
+        pass
+
+
     
     @staticmethod
     def config(filename:str ,section:str) -> dict:
@@ -44,5 +59,5 @@ if __name__ == "__main__":
         if "exit" == inputText:
             break
         else:
-            print(db.request(inputText))
+            print(PGDB.request(inputText))
     del db
