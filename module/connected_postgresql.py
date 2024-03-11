@@ -24,17 +24,17 @@ class PGDB:
         инициализация экземпляра класса, которая на вход принимает именнованные аргументы. filename - путь к конфигурационному файлу. section - в какой екции конфигурационного фала находяться данные.
         config/db.examle - содержит пример конфигурационного файла
         """
-        self.conn= None
-        self.cursor = None
+        self.__conn= None
+        self.__cursor = None
         try:
             if not Path(filename).is_file():
                 raise FileNotFoundError(f"{'-'*30}\nФайла конфигурации './config/db.ini' не существует\nПоместите файл конфигурации db.ini в папку config\nСодержимое файла дожно содержать секцию {section}, которая должна содержать параметры подключения к базе данных\nнапример:\n[{section}]\nhost=localhost\nuser=user\npassword=password\n{'-'*30}")
             print(f"Получаем данные из файла {filename}\n")
-            conf = self.config(filename, section)
-            self.conn = psycopg2.connect(**conf)
+            conf = self.__config(filename, section)
+            self.__conn = psycopg2.connect(**conf)
             print("Подключаемся к базе данных")
-            self.cursor = self.conn.cursor()
-            params = self.conn.get_dsn_parameters()
+            self.__cursor = self.__conn.__cursor()
+            params = self.__conn.get_dsn_parameters()
             print("Информация о подключении:")
             print(params)
         except Exception as error:
@@ -45,12 +45,12 @@ class PGDB:
         """
         перед удалением экземляа класса закрывает соединения с сервером
         """
-        if self.cursor:
-            self.cursor.close()
-            self.cursor = None
-        if self.conn:
-            self.conn.close()
-            self.conn = None
+        if self.__cursor:
+            self.__cursor.close()
+            self.__cursor = None
+        if self.__conn:
+            self.__conn.close()
+            self.__conn = None
         print("Отключено")
 
     def request(self, order:str) -> str:
@@ -59,13 +59,13 @@ class PGDB:
         """
         try:
             if not order : order = "SELECT version()"
-            self.cursor.execute(order)
-            return self.cursor.fetchall()
+            self.__cursor.execute(order)
+            return self.__cursor.fetchall()
         except psycopg2.Error as error:
             print("Что то пошло не так...\n", error)
 
     @staticmethod
-    def config(fname:str ,sctn:str) -> dict:
+    def __config(fname:str ,sctn:str) -> dict:
         """
         статичный метод открытия конфигурационного файла и считывание данных из укаазнного сектора
         на вход принимает путь к файлу и название секции для чтения.
