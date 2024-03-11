@@ -33,7 +33,7 @@ class PGDB:
             conf = self.__config(filename, section)
             self.__conn = psycopg2.connect(**conf)
             print("Подключаемся к базе данных")
-            self.__cursor = self.__conn.__cursor()
+            self.__cursor = self.__conn.cursor()
             params = self.__conn.get_dsn_parameters()
             print("Информация о подключении:")
             print(params)
