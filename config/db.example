@@ -1,5 +1,5 @@
 [postgresql]
 host=localhost
-database=uralgipromash
-user=postgres
-password=Atanvarno644
+database=
+user=
+password=
