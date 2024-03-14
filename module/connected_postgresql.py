@@ -53,7 +53,7 @@ class PGDB:
             self.__conn = None
         print("Отключено")
 
-    def request(self, order:str) -> str:
+    def request(self, order:str) -> list:
         """
         отправка запроса к серверу и получение список ответов
         """
