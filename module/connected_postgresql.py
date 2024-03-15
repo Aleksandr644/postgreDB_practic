@@ -62,8 +62,10 @@ class PGDB:
             self.__cursor.execute(order)
             return self.__cursor.fetchall()
         except psycopg2.Error as error:
-            if error != "no results to fetch":
+            if error.args[0] != "no results to fetch":
                 print("Что то пошло не так...\n", type(error),error)
+            else:
+                print(error.args[0], end=" ")
 
     @staticmethod
     def __config(fname:str ,sctn:str) -> dict:
