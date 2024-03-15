@@ -60,9 +60,11 @@ class PGDB:
         try:
             if not order : order = "SELECT version()"
             self.__cursor.execute(order)
-            return self.__cursor.fetchall()
+            response = self.__cursor.fetchall()
+            if response :
+                return response
         except psycopg2.Error as error:
-            print("Что то пошло не так...\n", error)
+            print("Что то пошло не так...\n", type(error),error)
 
     @staticmethod
     def __config(fname:str ,sctn:str) -> dict:
