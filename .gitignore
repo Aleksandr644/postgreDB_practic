@@ -1,0 +1,5 @@
+!.gitignore
+!.gitattributes
+.*
+config/db.ini
+__pycache__/

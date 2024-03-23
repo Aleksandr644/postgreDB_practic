@@ -1,48 +1,49 @@
-import psycopg2
-from configparser import ConfigParser
+import module.connected_postgresql as connDB
 
-class PGDB:
-    conn = None
-    cursor = None
-    def __init__(self, *, filename:str = "db.ini", section:str = "postgresql"):
+class RDBUGM():
+    def __init__(self, *, login: str, password: str):
         try:
-            PGDB.conn = psycopg2.connect(**PGDB.config(filename, section))
-            print("Connection")
-            PGDB.cursor = PGDB.conn.cursor()
-            params = PGDB.conn.get_dsn_parameters()
-            print("information:")
-            print(params)
-        except(Exception, psycopg2.Error) as error:
-            print("Ошибка подключения к базе данных", error)
-            PGDB.__del__()
-            exit(1)            
-        
-    def __del__(self):
-        print("Closing to connect")
-        if PGDB.cursor:
-            PGDB.cursor.close()
-            PGDB.cursor = None
-        if PGDB.conn:
-            PGDB.conn.close()
-            PGDB.conn = None
+            self.__db = connDB.PGDB(filename = "config/db.ini", section = "postgresql")
+            if not self.verify_login(login):
+                self.__db.request(f"INSERT INTO person(login) values('{login}');")
+                self.__db.request(f"UPDATE person SET password=crypt('{password}', gen_salt('bf')) WHERE login='{login}';")
+            elif self.verifi_password(login, password):
+                print("Доступ разрешен")
+            else:
+                print("Доступ запрещен")
+                raise PermissionError("Доступ запрещен")
+        except PermissionError("Доступ запрещен") as error:
+            print(error)
+            del self.__db
+            self.__del__()
+    def verify_login(self, login):
+        print("проверка логина")
+        b = self.__db.request(f"SELECT EXISTS(SELECT 1 FROM person WHERE login='{login}');")[0][0]
+        print("ответ ", b)
+        return b
 
-    def request(self, execut:str = "SELECT version()"):
-        PGDB.cursor.execute(execut)
-        return PGDB.cursor.fetchall()
-    
-    @staticmethod
-    def config(filename:str ,section:str) -> dict:
-        cfg = ConfigParser()
-        cfg.read(filename)
-        return dict(cfg.items(section))
-    
+    def verifi_password(self, login, password):
+        print("проверка пароля")
+        b = self.__db.request(f"SELECT (password=crypt('{password}', password)) AS pass_match FROM person WHERE login='{login}';")[0][0]
+        print("ответ ", b)
+        return b
+
+    def __del__(self):
+        del self.__db
+        print("запросы к базе данных Уралгипромаш закончены")
+
 if __name__ == "__main__":
-    db = PGDB()
+    db = connDB.PGDB(filename= "config/db.ini", section = "postgresql")
     inputText = ""
     while True:
         inputText = input("Пожалуйста введите запрос:\nДля выхода введите exit\n")
         if "exit" == inputText:
             break
+        elif "login" == inputText:
+            login = input("Пожалуйста введите ваш ЛОГИН:\n")
+            password = input("Пожалуйста введите ваш ПАРОЛЬ:\n")
+            test = RDBUGM(login=login, password=password)
+            del test
         else:
             print(db.request(inputText))
     del db
