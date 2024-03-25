@@ -1,4 +1,4 @@
-import psycopg
+import psycopg2
 from pathlib import Path
 from configparser import ConfigParser
 
@@ -32,7 +32,7 @@ class PGDB:
             print(f"Получаем данные из файла {filename}\n")
             conf = self.__config(filename, section)
             # TODO избавиться от autocommit
-            self.__conn = psycopg.connect(**conf, autocommit=True)
+            self.__conn = psycopg2.connect(**conf, autocommit=True)
             print("Подключаемся к базе данных")
             self.__cursor = self.__conn.cursor()
         except Exception as error:
@@ -58,7 +58,7 @@ class PGDB:
             if not order : order = "SELECT version()"
             self.__cursor.execute(order)
             return self.__cursor.fetchall()
-        except psycopg.Error as error:
+        except psycopg2.Error as error:
             if error.args[0] != "no results to fetch":
                 print("Что то пошло не так...\n", type(error),error)
             else:

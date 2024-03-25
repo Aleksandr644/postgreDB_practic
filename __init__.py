@@ -1,1 +1,1 @@
-from __connected_postgresql__ import PGDB
+from uwsgi.ugm.postgreDB.__connected_psycopg2_postgresql__ import PGDB
